@@ -4,60 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: sans-serif;
-            background-color: #f0f0f0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            font-size: 3rem;
-            color: #333;
-            margin-bottom: 40px;
-        }
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px; /* Ensure this value is consistent */
-}
-        .grid img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-    </style>
-
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>PORTFOLIO</h1>
-    <div class="container">
-        <div class="grid">
-            <img src="images/00049-2336457239.png" alt="Image 1">
-            <img src="images/1.jpg" alt="Image 2">
-            <img src="images/10.jpg" alt="Image 3">
-            <img src="images/PLxhODa.jpeg" alt="Image 15">
-            <img src="images/11.jpg" alt="Image 4">
-            <img src="images/12.jpg" alt="Image 5">
-            <img src="images/2.jpg" alt="Image 6">
-            <img src="images/KsleEUf.jpeg" alt="Image 13">
-            <img src="images/3.jpg" alt="Image 7">
-            <img src="images/4.jpg" alt="Image 8">
-            <img src="images/5.jpg" alt="Image 9">
-            <img src="images/pinkflower.png" alt="Image 14">
-            <img src="images/7.jpg" alt="Image 10">
-            <img src="images/8.jpg" alt="Image 11">
-            <img src="images/9.jpg" alt="Image 12">       
-            <img src="images/purple.png" alt="Image 16">
+    <h1>Portfolio</h1>
+    
+    <div class="gallery-container" id="masonry-container">
+        <div class="gallery-item">
+            <img src="images/1.jpg" alt="Beispielbild 1">
         </div>
+        <div class="gallery-item">
+            <img src="images/2.jpg" alt="Beispielbild 2">
+        </div>
+        <div class="gallery-item">
+            <img src="images/3.jpg" alt="Beispielbild 3">
+        </div>
+        <div class="gallery-item">
+            <img src="images/4.jpg" alt="Beispielbild 4">
+        </div>
+        <div class="gallery-item">
+            <img src="images/5.jpg" alt="Beispielbild 5">
+        </div>        
+        <div class="gallery-item">
+            <img src="images/7.jpg" alt="Beispielbild 7">
+        </div>
+        <div class="gallery-item">
+            <img src="images/8.jpg" alt="Beispielbild 8">
+        </div>
+        <div class="gallery-item">
+            <img src="images/9.jpg" alt="Beispielbild 9">
+        </div>
+        <div class="gallery-item">
+            <img src="images/10.jpg" alt="Beispielbild 10">
+        </div>
+        <div class="gallery-item">
+            <img src="images/11.jpg" alt="Beispielbild 11">
+        </div>
+        <div class="gallery-item">
+            <img src="images/12.jpg" alt="Beispielbild 12">
+        </div>
+        <div class="gallery-item">
+            <img src="images/00049-2336457239.png" alt="Beispielbild 13">
+        </div>
+        <div class="gallery-item">
+            <img src="images/KsleEUf.jpeg" alt="Beispielbild 14">
+        </div>
+        <div class="gallery-item">
+            <img src="images/pinkflower.png" alt="Beispielbild 15">        
+        </div>
+        <div class="gallery-item">
+            <img src="images/PLxhODa.jpeg" alt="Beispielbild 16">
+        </div>
+        <div class="gallery-item">
+            <img src="images/purple.png" alt="Beispielbild 17">
+        </div>        
     </div>
+
+    <!-- Masonry.js einbinden -->
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script>
+        // Masonry initialisieren
+        window.addEventListener('load', function() {
+            var grid = document.querySelector('#masonry-container');
+            var msnry = new Masonry(grid, {
+                itemSelector: '.gallery-item',
+                columnWidth: '.gallery-item',
+                percentPosition: true,
+                gutter: 10
+            });
+        });
+    </script>
 </body>
 </html>

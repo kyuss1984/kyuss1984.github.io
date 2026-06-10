@@ -272,13 +272,19 @@
     <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
     <script>
         // Masonry initialisieren
-        window.addEventListener('load', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             var grid = document.querySelector('#masonry-container');
             var msnry = new Masonry(grid, {
                 itemSelector: '.gallery-item',
                 columnWidth: '.gallery-item',
                 percentPosition: true,
                 gutter: 10
+            });
+
+            // Layout aktualisieren, wenn ein Bild geladen wurde (wichtig für Lazy Loading)
+            const allImages = document.querySelectorAll('.gallery-item img');
+            allImages.forEach(img => {
+                img.addEventListener('load', () => msnry.layout());
             });
         });
 

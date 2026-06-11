@@ -31,23 +31,14 @@ h1 {
     height: auto;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
     display: block;
     cursor: pointer;
-}
-
-
-/* Übergang zwischen Platzhalter und Bild */
-.gallery-item img {
-    transition: opacity 0.3s ease;
+    opacity: 0;
 }
 
 .gallery-item img.loaded {
     opacity: 1;
-}
-
-.gallery-item img:not(.loaded) {
-    opacity: 0;
 }
 
 .gallery-item img:hover {

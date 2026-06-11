@@ -7,9 +7,12 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>PORTFOLIO</h1>
-    
-    <div class="gallery-container" id="masonry-container">
+    <main>
+        <header>
+            <h1>PORTFOLIO</h1>
+        </header>
+        
+        <section class="gallery-container" id="masonry-container" role="region" aria-label="Bildergalerie">
         <div class="gallery-item">
             <img data-src="images/00005-2288155043.png" alt="Galeriebild" class="lazy">
         </div>
@@ -256,15 +259,15 @@
         <div class="gallery-item">
             <img data-src="images/00022-1.png" alt="Galeriebild" class="lazy">
         </div>
-    </div>
+    </section>
  
     <!-- Lightbox Modal -->
-    <div id="lightbox" class="lightbox">
+    <div id="lightbox" class="lightbox" role="dialog" aria-hidden="true">
         <div class="lightbox-wrapper">
-            <span class="close-lightbox">&times;</span>
-            <span class="nav-btn prev" id="prev-btn">&#10094;</span>
-            <img class="lightbox-content" id="lightbox-img">
-            <span class="nav-btn next" id="next-btn">&#10095;</span>
+            <span class="close-lightbox" role="button" aria-label="Lightbox schließen">&times;</span>
+            <span class="nav-btn prev" id="prev-btn" role="button" aria-label="Vorheriges Bild">&#10094;</span>
+            <img class="lightbox-content" id="lightbox-img" alt="">
+            <span class="nav-btn next" id="next-btn" role="button" aria-label="Nächstes Bild">&#10095;</span>
         </div>
     </div>
  
@@ -306,6 +309,7 @@
                 
                 img.onerror = () => {
                     loadingCount--;
+                    img.classList.add('error');
                     // Try to load more images
                     loadNextImage();
                 };
@@ -332,11 +336,11 @@
             // Helper function to check if an element is in the viewport or near the bottom
             function isInViewport(element) {
                 const rect = element.getBoundingClientRect();
-                // Load images that are in viewport or up to 1000px below the viewport
+                // Load images that are in viewport or up to 500px below the viewport
                 return (
                     rect.top >= 0 &&
                     rect.left >= 0 &&
-                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) + 1000
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) + 500
                 );
             }
             
@@ -344,73 +348,112 @@
             loadNextImage();
             
             // Also check when scrolling
-            window.addEventListener('scroll', loadNextImage);
-        });
+            let scrollTimer;
+            window.addEventListener('scroll', function() {
+                // Debounce scroll events
+                clearTimeout(scrollTimer);
+                scrollTimer = setTimeout(loadNextImage, 100);
+            });
 
-        // Lightbox Logik
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightbox-img');
-        const closeBtn = document.querySelector('.close-lightbox');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        
-        // We need to update this list dynamically because images load lazily
-        function getAllImages() {
-            return Array.from(document.querySelectorAll('.gallery-item img'));
-        }
-        
-        let currentIndex = 0;
+            // Lightbox Logik mit Event Delegation
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            let currentIndex = 0;
 
-        function updateLightboxImage() {
-            const imgs = getAllImages();
-            const img = imgs[currentIndex];
-            lightboxImg.src = img.src || img.dataset.src;
-        }
+            // Helper function to get all loaded images
+            function getLoadedImages() {
+                return Array.from(document.querySelectorAll('.gallery-item img.loaded, .gallery-item img.error'));
+            }
 
-        // Instead of a fixed loop, we add click listeners to all gallery items
-        document.querySelectorAll('.gallery-item img').forEach((img, index) => {
-            img.onclick = function() {
+            // Update lightbox image
+            function updateLightboxImage() {
+                const imgs = getLoadedImages();
+                if (imgs.length > 0) {
+                    const img = imgs[currentIndex];
+                    lightboxImg.src = img.src || img.dataset.src;
+                    lightboxImg.alt = img.alt;
+                }
+            }
+
+            // Open lightbox
+            function openLightbox(index) {
                 currentIndex = index;
                 updateLightboxImage();
                 lightbox.style.display = 'flex';
-            };
-        });
-
-        closeBtn.onclick = function() {
-            lightbox.style.display = 'none';
-        };
-
-        prevBtn.onclick = function(e) {
-            e.stopPropagation();
-            const imgs = getAllImages();
-            currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
-            updateLightboxImage();
-        };
-
-        nextBtn.onclick = function(e) {
-            e.stopPropagation();
-            const imgs = getAllImages();
-            currentIndex = (currentIndex + 1) % imgs.length;
-            updateLightboxImage();
-        };
-
-        lightbox.onclick = function(e) {
-            if (e.target === lightbox || e.target.classList.contains('lightbox-wrapper')) {
-                lightbox.style.display = 'none';
+                lightbox.setAttribute('aria-hidden', 'false');
+                // Prevent background scrolling
+                document.body.style.overflow = 'hidden';
             }
-        };
 
-        // Pfeiltasten-Navigation hinzufügen
-        window.addEventListener('keydown', function(e) {
-            if (lightbox.style.display === 'flex') {
-                if (e.key === 'ArrowRight') {
-                    nextBtn.click();
-                } else if (e.key === 'ArrowLeft') {
-                    prevBtn.click();
-                } else if (e.key === 'Escape') {
-                    closeBtn.click();
+            // Close lightbox
+            function closeLightbox() {
+                lightbox.style.display = 'none';
+                lightbox.setAttribute('aria-hidden', 'true');
+                // Re-enable background scrolling
+                document.body.style.overflow = '';
+            }
+
+            // Navigate to next image
+            function nextImage() {
+                const imgs = getLoadedImages();
+                if (imgs.length > 0) {
+                    currentIndex = (currentIndex + 1) % imgs.length;
+                    updateLightboxImage();
                 }
             }
+
+            // Navigate to previous image
+            function prevImage() {
+                const imgs = getLoadedImages();
+                if (imgs.length > 0) {
+                    currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
+                    updateLightboxImage();
+                }
+            }
+
+            // Event delegation for gallery items
+            grid.addEventListener('click', function(e) {
+                if (e.target.tagName === 'IMG') {
+                    const img = e.target;
+                    const galleryItems = Array.from(document.querySelectorAll('.gallery-item img.loaded, .gallery-item img.error'));
+                    const index = galleryItems.indexOf(img);
+                    if (index !== -1) {
+                        openLightbox(index);
+                    }
+                }
+            });
+
+            // Lightbox controls
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox || e.target.classList.contains('lightbox-wrapper')) {
+                    closeLightbox();
+                } else if (e.target.id === 'prev-btn') {
+                    e.stopPropagation();
+                    prevImage();
+                } else if (e.target.id === 'next-btn') {
+                    e.stopPropagation();
+                    nextImage();
+                } else if (e.target.classList.contains('close-lightbox')) {
+                    closeLightbox();
+                }
+            });
+
+            // Keyboard navigation
+            window.addEventListener('keydown', function(e) {
+                if (lightbox.style.display === 'flex') {
+                    switch(e.key) {
+                        case 'ArrowRight':
+                            nextImage();
+                            break;
+                        case 'ArrowLeft':
+                            prevImage();
+                            break;
+                        case 'Escape':
+                            closeLightbox();
+                            break;
+                    }
+                }
+            });
         });
     </script>
 </body>

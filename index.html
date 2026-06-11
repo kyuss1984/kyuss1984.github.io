@@ -521,6 +521,37 @@
                     }
                 }
             });
+            
+            // Touch swipe functionality for mobile devices
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            // Touch start event
+            lightbox.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            
+            // Touch end event
+            lightbox.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+            
+            // Handle swipe gesture
+            function handleSwipe() {
+                const swipeThreshold = 50; // Minimum distance for swipe
+                
+                if (lightbox.style.display === 'flex') {
+                    // Swipe right to left (next image)
+                    if (touchStartX - touchEndX > swipeThreshold) {
+                        nextElement();
+                    }
+                    // Swipe left to right (previous image)
+                    else if (touchEndX - touchStartX > swipeThreshold) {
+                        prevElement();
+                    }
+                }
+            }
         });
     </script>
 </body>

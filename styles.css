@@ -92,7 +92,7 @@ h1 {
     align-items: center;
     flex-direction: column;
     cursor: zoom-out;
-    padding-top: 50px;
+    padding-top: 20px;
     box-sizing: border-box;
 }
 
@@ -128,21 +128,10 @@ h1 {
 }
 
 /* Navigation Pfeile */
-.nav-container {
-    position: relative;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
-    box-sizing: border-box;
-    margin-top: 10px;
-}
-
 .nav-btn {
-    position: relative;
-    top: auto;
-    bottom: auto;
-    transform: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     color: white;
     font-size: 50px;
     font-weight: bold;
@@ -158,11 +147,11 @@ h1 {
 }
 
 .prev {
-    left: auto;
+    left: 10px; /* Links neben dem Bild */
 }
 
 .next {
-    right: auto;
+    right: 10px; /* Rechts neben dem Bild */
 }
 
 /* Anpassung für mobile Geräte */

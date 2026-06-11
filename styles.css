@@ -88,12 +88,14 @@ h1 {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.9);
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
-    flex-direction: column;
+    flex-direction: row; /* Ändern zu row für horizontale Anordnung */
     cursor: zoom-out;
-    padding-top: 20px;
+    padding: 20px;
     box-sizing: border-box;
+    /* Stellt sicher, dass der Inhalt nicht gestreckt wird */
+    align-content: center;
 }
 
 .lightbox-wrapper {
@@ -102,6 +104,10 @@ h1 {
     justify-content: center;
     align-items: center;
     width: fit-content;
+    height: fit-content; /* Höhe anpassen, um sich an den Inhalt anzupassen */
+    /* Stellt sicher, dass absolute positionierte Elemente (Pfeile) relativ zu diesem Container positioniert werden */
+    flex-direction: row; /* Stellt sicher, dass die Elemente horizontal angeordnet sind */
+    align-items: center;
 }
 
 .lightbox-content {
@@ -110,6 +116,9 @@ h1 {
     border-radius: 4px;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
     cursor: default;
+    align-self: center; /* Stellt sicher, dass das Bild vertikal zentriert ist */
+    position: relative; /* Stellt sicher, dass absolute positionierte Elemente (Pfeile) relativ zu diesem Container positioniert werden */
+    display: block; /* Stellt sicher, dass das Bild als Blockelement dargestellt wird */
 }
 
 .close-lightbox {
@@ -141,6 +150,8 @@ h1 {
     user-select: none;
     transition: color 0.3s ease;
     z-index: 1010;
+    display: block; /* Stellt sicher, dass die Pfeile auf Desktop angezeigt werden */
+    /* Stellt sicher, dass die Pfeile relativ zum lightbox-wrapper positioniert sind */
 }
 
 .nav-btn:hover {
@@ -148,11 +159,21 @@ h1 {
 }
 
 .prev {
-    left: 10px; /* Links neben dem Bild */
+    left: -60px; /* Links neben dem Bild */
 }
 
 .next {
-    right: 10px; /* Rechts neben dem Bild */
+    right: -60px; /* Rechts neben dem Bild */
+}
+
+/* Desktop-Stil für Pfeile */
+.nav-btn.desktop {
+    display: block;
+}
+
+/* Mobile-Stil für Pfeile */
+.nav-btn.mobile {
+    display: none;
 }
 
 /* Anpassung für mobile Geräte */
@@ -176,7 +197,13 @@ h1 {
         box-sizing: border-box;
     }
     
-    .nav-btn {
+    /* Desktop-Pfeile ausblenden auf mobilen Geräten */
+    .nav-btn.desktop {
+        display: none;
+    }
+    
+    /* Mobile-Pfeile einblenden auf mobilen Geräten */
+    .nav-btn.mobile {
         display: block !important; /* Navigationspfeile auf mobilen Geräten einblenden */
         position: relative;
         top: auto;

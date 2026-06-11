@@ -273,12 +273,12 @@
         </div>
     </section>
  
-    <!-- Lightbox Modal -->
+<!-- Lightbox Modal -->
     <div id="lightbox" class="lightbox" role="dialog" aria-hidden="true">
         <div class="lightbox-wrapper">
             <span class="close-lightbox" role="button" aria-label="Lightbox schließen">&times;</span>
-            <img class="lightbox-content" id="lightbox-img" alt="">
             <span class="nav-btn prev" id="prev-btn" role="button" aria-label="Vorheriges Bild">&#10094;</span>
+            <img class="lightbox-content" id="lightbox-img" alt="">
             <span class="nav-btn next" id="next-btn" role="button" aria-label="Nächstes Bild">&#10095;</span>
         </div>
         <div class="nav-container">
@@ -446,29 +446,33 @@
                 }
             }
 
-            // Move navigation arrows to the correct container based on screen size
+// Move navigation arrows to the correct container based on screen size
             function moveNavigationArrows() {
                 const prevBtn = document.getElementById('prev-btn');
                 const nextBtn = document.getElementById('next-btn');
-                const navContainer = document.querySelector('.nav-container');
-                const lightboxWrapper = document.querySelector('.lightbox-wrapper');
                 
                 if (window.innerWidth <= 600) {
-                    // Move arrows to nav-container for mobile
-                    if (!navContainer.contains(prevBtn)) {
-                        navContainer.appendChild(prevBtn);
-                    }
-                    if (!navContainer.contains(nextBtn)) {
-                        navContainer.appendChild(nextBtn);
-                    }
+                    // Für mobile Geräte: Pfeile im nav-container anzeigen
+                    prevBtn.classList.add('mobile');
+                    nextBtn.classList.add('mobile');
+                    prevBtn.classList.remove('desktop');
+                    nextBtn.classList.remove('desktop');
                 } else {
-                    // Move arrows to lightbox-wrapper for desktop
-                    if (!lightboxWrapper.contains(prevBtn)) {
-                        lightboxWrapper.appendChild(prevBtn);
-                    }
-                    if (!lightboxWrapper.contains(nextBtn)) {
-                        lightboxWrapper.appendChild(nextBtn);
-                    }
+                    // Für Desktop-Geräte: Pfeile im lightbox-wrapper anzeigen
+                    prevBtn.classList.add('desktop');
+                    nextBtn.classList.add('desktop');
+                    prevBtn.classList.remove('mobile');
+                    nextBtn.classList.remove('mobile');
+                }
+            }
+            
+            // Initialisierung der Pfeile beim Laden der Seite
+            function initNavigationArrows() {
+                // Warten, bis das DOM vollständig geladen ist
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', moveNavigationArrows);
+                } else {
+                    moveNavigationArrows();
                 }
             }
 
@@ -571,12 +575,15 @@
                 }
             });
 
-            // Move navigation arrows when window is resized
+// Move navigation arrows when window is resized
             window.addEventListener('resize', function() {
                 if (lightbox.style.display === 'flex') {
                     moveNavigationArrows();
                 }
             });
+            
+            // Initialisierung der Pfeile beim Laden der Seite
+            initNavigationArrows();
         });
     </script>
 </body>

@@ -125,31 +125,41 @@ h1 {
 }
 
 /* Navigation Pfeile */
-.nav-btn {
+.nav-container {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    bottom: -80px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.nav-btn {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    transform: none;
     color: white;
     font-size: 50px;
     font-weight: bold;
     cursor: pointer;
     padding: 20px;
     user-select: none;
-    transition: color 0.3s ease, transform 0.2s ease;
+    transition: color 0.3s ease;
     z-index: 1010;
 }
 
 .nav-btn:hover {
     color: #ccc;
-    transform: translateY(-50%) scale(1.1);
 }
 
 .prev {
-    left: -70px; /* Direkt links neben dem Bild */
+    left: auto;
 }
 
 .next {
-    right: -70px; /* Direkt rechts neben dem Bild */
+    right: auto;
 }
 
 /* Anpassung für mobile Geräte */

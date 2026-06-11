@@ -396,15 +396,15 @@
             const lightboxImg = document.getElementById('lightbox-img');
             let currentIndex = 0;
 
-            // Helper function to get all loaded elements (images and videos)
-            function getLoadedElements() {
-                return Array.from(document.querySelectorAll('.gallery-item img.loaded, .gallery-item img.error, .gallery-item video.loaded, .gallery-item video.error'));
+            // Helper function to get all gallery elements (images and videos)
+            function getAllGalleryElements() {
+                return Array.from(document.querySelectorAll('.gallery-item img, .gallery-item video'));
             }
 
             // Update lightbox content
             function updateLightboxContent() {
-                const elements = getLoadedElements();
-                if (elements.length > 0) {
+                const elements = getAllGalleryElements();
+                if (elements.length > 0 && currentIndex >= 0 && currentIndex < elements.length) {
                     const element = elements[currentIndex];
                     
                     // Clear previous content
@@ -414,12 +414,21 @@
                     
                     // If it's an image
                     if (element.tagName === 'IMG') {
+                        // Load the image if it hasn't been loaded yet
+                        if (!element.src && element.dataset.src) {
+                            element.src = element.dataset.src;
+                        }
                         lightboxImg.src = element.src || element.dataset.src;
                         lightboxImg.alt = element.alt;
                         lightboxImg.style.display = 'block';
                     } 
                     // If it's a video
                     else if (element.tagName === 'VIDEO') {
+                        // Load the video if it hasn't been loaded yet
+                        if (!element.src && element.dataset.src) {
+                            element.src = element.dataset.src;
+                            element.load();
+                        }
                         const videoElement = document.createElement('video');
                         videoElement.src = element.src || element.dataset.src;
                         videoElement.controls = true;
@@ -462,7 +471,7 @@
 
             // Navigate to next element
             function nextElement() {
-                const elements = getLoadedElements();
+                const elements = getAllGalleryElements();
                 if (elements.length > 0) {
                     currentIndex = (currentIndex + 1) % elements.length;
                     updateLightboxContent();
@@ -471,7 +480,7 @@
 
             // Navigate to previous element
             function prevElement() {
-                const elements = getLoadedElements();
+                const elements = getAllGalleryElements();
                 if (elements.length > 0) {
                     currentIndex = (currentIndex - 1 + elements.length) % elements.length;
                     updateLightboxContent();
@@ -482,7 +491,7 @@
             grid.addEventListener('click', function(e) {
                 if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') {
                     const element = e.target;
-                    const galleryItems = Array.from(document.querySelectorAll('.gallery-item img.loaded, .gallery-item img.error, .gallery-item video.loaded, .gallery-item video.error'));
+                    const galleryItems = getAllGalleryElements();
                     const index = galleryItems.indexOf(element);
                     if (index !== -1) {
                         openLightbox(index);
@@ -525,16 +534,21 @@
             // Touch swipe functionality for mobile devices
             let touchStartX = 0;
             let touchEndX = 0;
+            let isSwiping = false;
             
             // Touch start event
             lightbox.addEventListener('touchstart', function(e) {
                 touchStartX = e.changedTouches[0].screenX;
+                isSwiping = true;
             }, { passive: true });
             
             // Touch end event
             lightbox.addEventListener('touchend', function(e) {
+                if (!isSwiping) return;
+                
                 touchEndX = e.changedTouches[0].screenX;
                 handleSwipe();
+                isSwiping = false;
             }, { passive: true });
             
             // Handle swipe gesture
@@ -542,13 +556,44 @@
                 const swipeThreshold = 50; // Minimum distance for swipe
                 
                 if (lightbox.style.display === 'flex') {
+                    // Get current content element (image or video)
+                    const contentElement = lightbox.querySelector('.lightbox-content') || lightboxImg;
+                    
+                    // Add transition class for smooth animation
+                    if (contentElement) {
+                        contentElement.classList.add('swipe-transition');
+                    }
+                    
                     // Swipe right to left (next image)
                     if (touchStartX - touchEndX > swipeThreshold) {
-                        nextElement();
+                        if (contentElement) {
+                            contentElement.classList.add('swipe-next');
+                        }
+                        setTimeout(() => {
+                            if (contentElement) {
+                                contentElement.classList.remove('swipe-next', 'swipe-transition');
+                            }
+                            nextElement();
+                        }, 300);
                     }
                     // Swipe left to right (previous image)
                     else if (touchEndX - touchStartX > swipeThreshold) {
-                        prevElement();
+                        if (contentElement) {
+                            contentElement.classList.add('swipe-prev');
+                        }
+                        setTimeout(() => {
+                            if (contentElement) {
+                                contentElement.classList.remove('swipe-prev', 'swipe-transition');
+                            }
+                            prevElement();
+                        }, 300);
+                    } else {
+                        // No valid swipe, remove transition class
+                        setTimeout(() => {
+                            if (contentElement) {
+                                contentElement.classList.remove('swipe-next', 'swipe-prev', 'swipe-transition');
+                            }
+                        }, 300);
                     }
                 }
             }

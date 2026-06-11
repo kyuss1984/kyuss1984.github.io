@@ -106,6 +106,50 @@ h1 {
     border-radius: 4px;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
     cursor: default;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Übergangseffekte für Wischen */
+.lightbox-content.swipe-transition {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.lightbox-content.swipe-next {
+    animation: swipeNext 0.3s ease forwards;
+}
+
+.lightbox-content.swipe-prev {
+    animation: swipePrev 0.3s ease forwards;
+}
+
+@keyframes swipeNext {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(-50px);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+}
+
+@keyframes swipePrev {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(50px);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateX(100px);
+        opacity: 0;
+    }
 }
 
 .close-lightbox {
@@ -155,12 +199,22 @@ h1 {
 /* Anpassung für mobile Geräte */
 @media (max-width: 600px) {
     .nav-btn {
-        font-size: 30px;
-        padding: 10px;
+        display: none; /* Navigationspfeile auf mobilen Geräten ausblenden */
     }
-    .prev { left: -40px; }
-    .next { right: -40px; }
     .close-lightbox {
-        right: -30px;
+        top: -40px; /* Über dem Bild positionieren */
+        right: 0; /* Rechts ausrichten */
+        left: auto; /* Automatische linke Position */
+        transform: none; /* Transform zurücksetzen */
+        text-align: right; /* Text rechts ausrichten */
+        padding-right: 10px; /* Etwas Abstand zum Rand */
+    }
+}
+
+/* Extra kleine Bildschirme */
+@media (max-width: 480px) {
+    .close-lightbox {
+        top: -35px; /* Etwas näher am Bild */
+        font-size: 30px; /* Etwas kleinerer Schriftgrad */
     }
 }

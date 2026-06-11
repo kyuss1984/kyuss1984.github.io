@@ -45,33 +45,6 @@ h1 {
     opacity: 1;
 }
 
-/* Add a loading spinner for better UX */
-.spinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    margin-top: -10px;
-    margin-left: -10px;
-    border: 2px solid #555;
-    border-top: 2px solid #fff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    z-index: 1;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Hide spinner when image is loaded */
-.gallery-item img.loaded + .spinner,
-.gallery-item video.loaded + .spinner {
-    display: none;
-}
-
 .gallery-item img:hover,
 .gallery-item video:hover {
     transform: scale(1.02);

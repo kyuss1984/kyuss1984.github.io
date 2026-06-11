@@ -162,9 +162,9 @@ h1 {
         align-items: center;
     }
     
-    .lightbox-wrapper {
-        margin-bottom: 80px; /* Platz für die Navigationspfeile unter dem Bild */
-    }
+.lightbox-wrapper {
+    margin-bottom: 20px; /* Platz für die Navigationspfeile unter dem Bild */
+}
     
     .nav-container {
         position: relative;

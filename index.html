@@ -403,7 +403,7 @@
                 return Array.from(document.querySelectorAll('.gallery-item img, .gallery-item video'));
             }
 
-            // Update lightbox content
+// Update lightbox content
             function updateLightboxContent() {
                 const elements = getAllGalleryElements();
                 if (elements.length > 0 && currentIndex >= 0 && currentIndex < elements.length) {
@@ -446,10 +446,37 @@
                 }
             }
 
-            // Open lightbox
+            // Move navigation arrows to the correct container based on screen size
+            function moveNavigationArrows() {
+                const prevBtn = document.getElementById('prev-btn');
+                const nextBtn = document.getElementById('next-btn');
+                const navContainer = document.querySelector('.nav-container');
+                const lightboxWrapper = document.querySelector('.lightbox-wrapper');
+                
+                if (window.innerWidth <= 600) {
+                    // Move arrows to nav-container for mobile
+                    if (!navContainer.contains(prevBtn)) {
+                        navContainer.appendChild(prevBtn);
+                    }
+                    if (!navContainer.contains(nextBtn)) {
+                        navContainer.appendChild(nextBtn);
+                    }
+                } else {
+                    // Move arrows to lightbox-wrapper for desktop
+                    if (!lightboxWrapper.contains(prevBtn)) {
+                        lightboxWrapper.appendChild(prevBtn);
+                    }
+                    if (!lightboxWrapper.contains(nextBtn)) {
+                        lightboxWrapper.appendChild(nextBtn);
+                    }
+                }
+            }
+
+// Open lightbox
             function openLightbox(index) {
                 currentIndex = index;
                 updateLightboxContent();
+                moveNavigationArrows(); // Move arrows to the correct container
                 lightbox.style.display = 'flex';
                 lightbox.setAttribute('aria-hidden', 'false');
                 // Prevent background scrolling
@@ -535,12 +562,19 @@
                 }
             });
             
-            // Browser back button support for mobile devices
+// Browser back button support for mobile devices
             window.addEventListener('popstate', function(event) {
                 if (lightbox.style.display === 'flex') {
                     closeLightbox();
                     // Prevent default browser back behavior
                     history.pushState(null, null, window.location.href);
+                }
+            });
+
+            // Move navigation arrows when window is resized
+            window.addEventListener('resize', function() {
+                if (lightbox.style.display === 'flex') {
+                    moveNavigationArrows();
                 }
             });
         });

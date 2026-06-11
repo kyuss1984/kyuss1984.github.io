@@ -328,7 +328,8 @@
 
         function updateLightboxImage() {
             const imgs = getAllImages();
-            lightboxImg.src = imgs[currentIndex].src;
+            const img = imgs[currentIndex];
+            lightboxImg.src = img.src || img.dataset.src;
         }
 
         // Instead of a fixed loop, we add click listeners to all gallery items
@@ -363,6 +364,19 @@
                 lightbox.style.display = 'none';
             }
         };
+
+        // Pfeiltasten-Navigation hinzufügen
+        window.addEventListener('keydown', function(e) {
+            if (lightbox.style.display === 'flex') {
+                if (e.key === 'ArrowRight') {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                } else if (e.key === 'Escape') {
+                    closeBtn.click();
+                }
+            }
+        });
     </script>
 </body>
 </html>

@@ -90,6 +90,7 @@ h1 {
     background-color: rgba(0, 0, 0, 0.9);
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     cursor: zoom-out;
 }
 
@@ -126,13 +127,13 @@ h1 {
 
 /* Navigation Pfeile */
 .nav-container {
-    position: absolute;
-    bottom: -80px;
+    position: relative;
     width: 100%;
     display: flex;
     justify-content: space-between;
     padding: 0 20px;
     box-sizing: border-box;
+    margin-top: 20px;
 }
 
 .nav-btn {

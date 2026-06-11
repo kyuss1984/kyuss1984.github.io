@@ -36,6 +36,47 @@ h1 {
     cursor: pointer;
 }
 
+/* Platzhalter für Bilder */
+.gallery-item .placeholder {
+    width: 100%;
+    height: 200px; /* Feste Höhe für Platzhalter */
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Lade-Indikator */
+.gallery-item .placeholder::after {
+    content: "";
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ccc;
+    border-top: 4px solid #333;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Übergang zwischen Platzhalter und Bild */
+.gallery-item img {
+    transition: opacity 0.3s ease;
+}
+
+.gallery-item img.loaded {
+    opacity: 1;
+}
+
+.gallery-item img:not(.loaded) {
+    opacity: 0;
+}
+
 .gallery-item img:hover {
     transform: scale(1.02);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);

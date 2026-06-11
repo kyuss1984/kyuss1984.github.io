@@ -46,15 +46,7 @@ h1 {
 }
 
 /* Add a loading spinner for better UX */
-.gallery-item img:not(.loaded),
-.gallery-item video:not(.loaded) {
-    position: relative;
-    overflow: hidden;
-}
-
-.gallery-item img:not(.loaded)::before,
-.gallery-item video:not(.loaded)::before {
-    content: "";
+.spinner {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -66,11 +58,18 @@ h1 {
     border-top: 2px solid #fff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
+    z-index: 1;
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Hide spinner when image is loaded */
+.gallery-item img.loaded + .spinner,
+.gallery-item video.loaded + .spinner {
+    display: none;
 }
 
 .gallery-item img:hover,

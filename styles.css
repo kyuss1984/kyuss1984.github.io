@@ -154,10 +154,30 @@ h1 {
 
 /* Anpassung für mobile Geräte */
 @media (max-width: 600px) {
+    .lightbox {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .lightbox-wrapper {
+        margin-bottom: 80px; /* Platz für die Navigationspfeile unter dem Bild */
+    }
+    
+    .nav-container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }
+    
     .nav-btn {
         display: block !important; /* Navigationspfeile auf mobilen Geräten einblenden */
+        position: relative;
         top: auto;
-        bottom: 20px;
+        bottom: auto;
         transform: none;
         padding: 15px;
         font-size: 40px;
@@ -165,14 +185,16 @@ h1 {
         height: auto;
         visibility: visible;
         opacity: 1;
+        z-index: 1020;
+        margin: 0;
     }
     
     .prev {
-        left: 20px;
+        left: auto;
     }
     
     .next {
-        right: 20px;
+        right: auto;
     }
     
     .close-lightbox {

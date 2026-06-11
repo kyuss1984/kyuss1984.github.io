@@ -12,7 +12,7 @@
             <h1>PORTFOLIO</h1>
         </header>
         
-        <section class="gallery-container" id="masonry-container" role="region" aria-label="Bildergalerie">
+    <section class="gallery-container" id="masonry-container" role="region" aria-label="Bildergalerie">
         <div class="gallery-item">
             <img data-src="images/00005-2288155043.png" alt="Galeriebild" class="lazy">
         </div>
@@ -67,6 +67,9 @@
         <div class="gallery-item">
             <img data-src="images/1.jpg" alt="Beispielbild 1" class="lazy">
         </div>
+        <div class="gallery-item video-item">
+            <video data-src="videos/9.mp4" class="lazy-video" muted loop playsinline autoplay></video>
+        </div>
         <div class="gallery-item">
             <img data-src="images/2.jpg" alt="Beispielbild 2" class="lazy">
         </div>
@@ -78,12 +81,21 @@
         </div>
         <div class="gallery-item">
             <img data-src="images/5.jpg" alt="Beispielbild 5" class="lazy">
+        </div>
+        <div class="gallery-item video-item">
+            <video data-src="videos/5.mp4" class="lazy-video" muted loop playsinline autoplay></video>
         </div>        
         <div class="gallery-item">
             <img data-src="images/7.jpg" alt="Beispielbild 7" class="lazy">
         </div>
+        <div class="gallery-item video-item">
+            <video data-src="videos/7.mp4" class="lazy-video" muted loop playsinline autoplay></video>
+        </div>
         <div class="gallery-item">
             <img data-src="images/8.jpg" alt="Beispielbild 8" class="lazy">
+        </div>
+        <div class="gallery-item video-item">
+            <video data-src="videos/8.mp4" class="lazy-video" muted loop playsinline autoplay></video>
         </div>
         <div class="gallery-item">
             <img data-src="images/9.jpg" alt="Beispielbild 9" class="lazy">
@@ -285,48 +297,72 @@
             });
 
             // Lazy Loading Implementation with load limit
-            const lazyImages = Array.from(document.querySelectorAll('img.lazy'));
+            const lazyElements = Array.from(document.querySelectorAll('img.lazy, video.lazy-video'));
             let loadingCount = 0;
-            const maxConcurrentLoads = 15; // Limit to 15 concurrent image loads
+            const maxConcurrentLoads = 15; // Limit to 15 concurrent loads
             
-            // Function to load an image
-            function loadImage(img) {
+            // Function to load an element (image or video)
+            function loadElement(element) {
                 if (loadingCount >= maxConcurrentLoads) return false;
                 
                 loadingCount++;
-                img.src = img.dataset.src; // Set the src from data-src
-                img.classList.remove('lazy');
+                element.src = element.dataset.src; // Set the src from data-src
+                element.classList.remove('lazy', 'lazy-video');
                 
-                // Important: Tell Masonry to layout after the image loads
-                img.onload = () => {
-                    loadingCount--;
-                    // Add loaded class to show the image
-                    img.classList.add('loaded');
-                    msnry.layout();
-                    // Try to load more images
-                    loadNextImage();
-                };
-                
-                img.onerror = () => {
-                    loadingCount--;
-                    img.classList.add('error');
-                    // Try to load more images
-                    loadNextImage();
-                };
+                // For images
+                if (element.tagName === 'IMG') {
+                    element.onload = () => {
+                        loadingCount--;
+                        element.classList.add('loaded');
+                        msnry.layout();
+                        loadNextElement();
+                    };
+                    
+                    element.onerror = () => {
+                        loadingCount--;
+                        element.classList.add('error');
+                        loadNextElement();
+                    };
+                } 
+                // For videos
+                else if (element.tagName === 'VIDEO') {
+                    element.onloadeddata = () => {
+                        loadingCount--;
+                        element.classList.add('loaded');
+                        msnry.layout();
+                        
+                        // Try to play the video automatically
+                        if (element.autoplay) {
+                            element.muted = true; // Ensure muted for autoplay
+                            element.play().catch(e => console.log("Autoplay failed:", e));
+                        }
+                        
+                        loadNextElement();
+                    };
+                    
+                    element.onerror = () => {
+                        loadingCount--;
+                        element.classList.add('error');
+                        loadNextElement();
+                    };
+                    
+                    // Start loading the video data
+                    element.load();
+                }
                 
                 return true;
             }
             
-            // Function to load the next available image
-            function loadNextImage() {
+            // Function to load the next available element
+            function loadNextElement() {
                 if (loadingCount >= maxConcurrentLoads) return;
                 
-                for (let i = 0; i < lazyImages.length; i++) {
-                    const img = lazyImages[i];
-                    if (img.classList.contains('lazy')) {
-                        if (isInViewport(img)) {
-                            if (loadImage(img)) {
-                                break; // Only load one image at a time
+                for (let i = 0; i < lazyElements.length; i++) {
+                    const element = lazyElements[i];
+                    if (element.classList.contains('lazy') || element.classList.contains('lazy-video')) {
+                        if (isInViewport(element)) {
+                            if (loadElement(element)) {
+                                break; // Only load one element at a time
                             }
                         }
                     }
@@ -336,7 +372,7 @@
             // Helper function to check if an element is in the viewport or near the bottom
             function isInViewport(element) {
                 const rect = element.getBoundingClientRect();
-                // Load images that are in viewport or up to 500px below the viewport
+                // Load elements that are in viewport or up to 500px below the viewport
                 return (
                     rect.top >= 0 &&
                     rect.left >= 0 &&
@@ -344,15 +380,15 @@
                 );
             }
             
-            // Initial load of visible images
-            loadNextImage();
+            // Initial load of visible elements
+            loadNextElement();
             
             // Also check when scrolling
             let scrollTimer;
             window.addEventListener('scroll', function() {
                 // Debounce scroll events
                 clearTimeout(scrollTimer);
-                scrollTimer = setTimeout(loadNextImage, 100);
+                scrollTimer = setTimeout(loadNextElement, 100);
             });
 
             // Lightbox Logik mit Event Delegation
@@ -360,25 +396,49 @@
             const lightboxImg = document.getElementById('lightbox-img');
             let currentIndex = 0;
 
-            // Helper function to get all loaded images
-            function getLoadedImages() {
-                return Array.from(document.querySelectorAll('.gallery-item img.loaded, .gallery-item img.error'));
+            // Helper function to get all loaded elements (images and videos)
+            function getLoadedElements() {
+                return Array.from(document.querySelectorAll('.gallery-item img.loaded, .gallery-item img.error, .gallery-item video.loaded, .gallery-item video.error'));
             }
 
-            // Update lightbox image
-            function updateLightboxImage() {
-                const imgs = getLoadedImages();
-                if (imgs.length > 0) {
-                    const img = imgs[currentIndex];
-                    lightboxImg.src = img.src || img.dataset.src;
-                    lightboxImg.alt = img.alt;
+            // Update lightbox content
+            function updateLightboxContent() {
+                const elements = getLoadedElements();
+                if (elements.length > 0) {
+                    const element = elements[currentIndex];
+                    
+                    // Clear previous content
+                    lightboxImg.style.display = 'none';
+                    const video = lightbox.querySelector('video');
+                    if (video) video.remove();
+                    
+                    // If it's an image
+                    if (element.tagName === 'IMG') {
+                        lightboxImg.src = element.src || element.dataset.src;
+                        lightboxImg.alt = element.alt;
+                        lightboxImg.style.display = 'block';
+                    } 
+                    // If it's a video
+                    else if (element.tagName === 'VIDEO') {
+                        const videoElement = document.createElement('video');
+                        videoElement.src = element.src || element.dataset.src;
+                        videoElement.controls = true;
+                        videoElement.autoplay = true;
+                        videoElement.loop = true;
+                        videoElement.muted = false;
+                        videoElement.style.maxWidth = '90vw';
+                        videoElement.style.maxHeight = '90vh';
+                        videoElement.style.borderRadius = '4px';
+                        videoElement.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
+                        lightbox.querySelector('.lightbox-wrapper').insertBefore(videoElement, lightboxImg);
+                    }
                 }
             }
 
             // Open lightbox
             function openLightbox(index) {
                 currentIndex = index;
-                updateLightboxImage();
+                updateLightboxContent();
                 lightbox.style.display = 'flex';
                 lightbox.setAttribute('aria-hidden', 'false');
                 // Prevent background scrolling
@@ -391,32 +451,39 @@
                 lightbox.setAttribute('aria-hidden', 'true');
                 // Re-enable background scrolling
                 document.body.style.overflow = '';
-            }
-
-            // Navigate to next image
-            function nextImage() {
-                const imgs = getLoadedImages();
-                if (imgs.length > 0) {
-                    currentIndex = (currentIndex + 1) % imgs.length;
-                    updateLightboxImage();
+                
+                // Pause any playing video in lightbox
+                const video = lightbox.querySelector('video');
+                if (video) {
+                    video.pause();
+                    video.remove();
                 }
             }
 
-            // Navigate to previous image
-            function prevImage() {
-                const imgs = getLoadedImages();
-                if (imgs.length > 0) {
-                    currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
-                    updateLightboxImage();
+            // Navigate to next element
+            function nextElement() {
+                const elements = getLoadedElements();
+                if (elements.length > 0) {
+                    currentIndex = (currentIndex + 1) % elements.length;
+                    updateLightboxContent();
+                }
+            }
+
+            // Navigate to previous element
+            function prevElement() {
+                const elements = getLoadedElements();
+                if (elements.length > 0) {
+                    currentIndex = (currentIndex - 1 + elements.length) % elements.length;
+                    updateLightboxContent();
                 }
             }
 
             // Event delegation for gallery items
             grid.addEventListener('click', function(e) {
-                if (e.target.tagName === 'IMG') {
-                    const img = e.target;
-                    const galleryItems = Array.from(document.querySelectorAll('.gallery-item img.loaded, .gallery-item img.error'));
-                    const index = galleryItems.indexOf(img);
+                if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') {
+                    const element = e.target;
+                    const galleryItems = Array.from(document.querySelectorAll('.gallery-item img.loaded, .gallery-item img.error, .gallery-item video.loaded, .gallery-item video.error'));
+                    const index = galleryItems.indexOf(element);
                     if (index !== -1) {
                         openLightbox(index);
                     }
@@ -429,10 +496,10 @@
                     closeLightbox();
                 } else if (e.target.id === 'prev-btn') {
                     e.stopPropagation();
-                    prevImage();
+                    prevElement();
                 } else if (e.target.id === 'next-btn') {
                     e.stopPropagation();
-                    nextImage();
+                    nextElement();
                 } else if (e.target.classList.contains('close-lightbox')) {
                     closeLightbox();
                 }
@@ -443,10 +510,10 @@
                 if (lightbox.style.display === 'flex') {
                     switch(e.key) {
                         case 'ArrowRight':
-                            nextImage();
+                            nextElement();
                             break;
                         case 'ArrowLeft':
-                            prevImage();
+                            prevElement();
                             break;
                         case 'Escape':
                             closeLightbox();

@@ -298,310 +298,301 @@
                 gutter: 10
             });
 
-            // Lazy Loading Implementation with load limit
-            const lazyElements = Array.from(document.querySelectorAll('img.lazy, video.lazy-video'));
-            let loadingCount = 0;
-            // Further increase concurrent loads for better performance on mobile with fast scrolling
-            const maxConcurrentLoads = 35; // Limit to 35 concurrent loads
-            
-            // Function to load an element (image or video)
-            function loadElement(element) {
-                if (loadingCount >= maxConcurrentLoads) return false;
+            // ======================
+            // Lazy Loading Module
+            // ======================
+            const lazyLoadingModule = (function() {
+                // Use a queue to manage elements to be loaded for better performance
+                const lazyElements = Array.from(document.querySelectorAll('img.lazy, video.lazy-video'));
+                let loadingCount = 0;
+                const maxConcurrentLoads = 6; // Reduced for better stability across devices
                 
-                loadingCount++;
-                element.src = element.dataset.src; // Set the src from data-src
-                element.classList.remove('lazy', 'lazy-video');
-                
-                // For images
-                if (element.tagName === 'IMG') {
-                    element.onload = () => {
-                        loadingCount--;
-                        element.classList.add('loaded');
-                        msnry.layout();
-                        loadNextElement();
-                    };
-                    
-                    element.onerror = () => {
-                        loadingCount--;
-                        element.classList.add('error');
-                        loadNextElement();
-                    };
-                } 
-                // For videos
-                else if (element.tagName === 'VIDEO') {
-                    element.onloadeddata = () => {
-                        loadingCount--;
-                        element.classList.add('loaded');
-                        msnry.layout();
-                        
-                        // Try to play the video automatically
-                        if (element.autoplay) {
-                            element.muted = true; // Ensure muted for autoplay
-                            element.play().catch(e => console.log("Autoplay failed:", e));
-                        }
-                        
-                        loadNextElement();
-                    };
-                    
-                    element.onerror = () => {
-                        loadingCount--;
-                        element.classList.add('error');
-                        loadNextElement();
-                    };
-                    
-                    // Start loading the video data
-                    element.load();
+                // Helper function to check if an element is in the viewport or near the bottom
+                // Adjusted preload distance for more balanced loading
+                function isInViewport(element) {
+                    const rect = element.getBoundingClientRect();
+                    const isMobile = window.innerWidth <= 768;
+                    // Reduced preload distance for more controlled loading
+                    const preloadDistance = isMobile ? 1000 : 500; 
+                    return (
+                        rect.top >= 0 &&
+                        rect.left >= 0 &&
+                        rect.top <= (window.innerHeight || document.documentElement.clientHeight) + preloadDistance
+                    );
                 }
                 
-                return true;
-            }
-            
-            // Function to load the next available element
-            function loadNextElement() {
-                if (loadingCount >= maxConcurrentLoads) return;
+                // Function to load an element (image or video)
+                function loadElement(element) {
+                    if (loadingCount >= maxConcurrentLoads) return false;
+                    
+                    loadingCount++;
+                    element.src = element.dataset.src; // Set the src from data-src
+                    element.classList.remove('lazy', 'lazy-video');
+                    
+                    // For images
+                    if (element.tagName === 'IMG') {
+                        element.onload = () => {
+                            loadingCount--;
+                            element.classList.add('loaded');
+                            msnry.layout();
+                            loadNextElement();
+                        };
+                        
+                        element.onerror = () => {
+                            loadingCount--;
+                            element.classList.add('error');
+                            loadNextElement();
+                        };
+                    } 
+                    // For videos
+                    else if (element.tagName === 'VIDEO') {
+                        element.onloadeddata = () => {
+                            loadingCount--;
+                            element.classList.add('loaded');
+                            msnry.layout();
+                            
+                            // Try to play the video automatically
+                            if (element.autoplay) {
+                                element.muted = true; // Ensure muted for autoplay
+                                element.play().catch(e => console.log("Autoplay failed:", e));
+                            }
+                            
+                            loadNextElement();
+                        };
+                        
+                        element.onerror = () => {
+                            loadingCount--;
+                            element.classList.add('error');
+                            loadNextElement();
+                        };
+                        
+                        // Start loading the video data
+                        element.load();
+                    }
+                    
+                    return true;
+                }
                 
-                for (let i = 0; i < lazyElements.length; i++) {
-                    const element = lazyElements[i];
-                    if (element.classList.contains('lazy') || element.classList.contains('lazy-video')) {
-                        if (isInViewport(element)) {
-                            if (loadElement(element)) {
-                                break; // Only load one element at a time
+                // Function to load the next available element from the list
+                function loadNextElement() {
+                    if (loadingCount >= maxConcurrentLoads) return;
+                    
+                    // Loop through all elements
+                    for (let i = 0; i < lazyElements.length; i++) {
+                        const element = lazyElements[i];
+                        
+                        if (element.classList.contains('lazy') || element.classList.contains('lazy-video')) {
+                            if (isInViewport(element)) {
+                                if (loadElement(element)) {
+                                    break; // Only load one element at a time
+                                }
                             }
                         }
                     }
                 }
-            }
-            
-            // Helper function to check if an element is in the viewport or near the bottom
-            function isInViewport(element) {
-                const rect = element.getBoundingClientRect();
-                // Load elements that are in viewport or below the viewport
-                // Use an even larger preload area on mobile devices for fast scrolling
-                const isMobile = window.innerWidth <= 768;
-                const preloadDistance = isMobile ? 3500 : 1500; // 3500px preload on mobile, 1500px on desktop
-                return (
-                    rect.top >= 0 &&
-                    rect.left >= 0 &&
-                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) + preloadDistance
-                );
-            }
-            
-            // Initial load of visible elements
-            loadNextElement();
-            
-            // Also check when scrolling
-            let scrollTimer;
-            window.addEventListener('scroll', function() {
-                // Debounce scroll events with even shorter delay for better responsiveness with fast scrolling
-                clearTimeout(scrollTimer);
-                scrollTimer = setTimeout(loadNextElement, 25);
-            });
-
-            // Lightbox Logik mit Event Delegation
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
-            let currentIndex = 0;
-
-            // Helper function to get all gallery elements (images and videos)
-            function getAllGalleryElements() {
-                return Array.from(document.querySelectorAll('.gallery-item img, .gallery-item video'));
-            }
-
-// Update lightbox content
-            function updateLightboxContent() {
-                const elements = getAllGalleryElements();
-                if (elements.length > 0 && currentIndex >= 0 && currentIndex < elements.length) {
-                    const element = elements[currentIndex];
-                    
-                    // Clear previous content
-                    lightboxImg.style.display = 'none';
-                    const video = lightbox.querySelector('video');
-                    if (video) video.remove();
-                    
-                    // If it's an image
-                    if (element.tagName === 'IMG') {
-                        // Load the image if it hasn't been loaded yet
-                        if (!element.src && element.dataset.src) {
-                            element.src = element.dataset.src;
-                        }
-                        lightboxImg.src = element.src || element.dataset.src;
-                        lightboxImg.alt = element.alt;
-                        lightboxImg.style.display = 'block';
-                    } 
-                    // If it's a video
-                    else if (element.tagName === 'VIDEO') {
-                        // Load the video if it hasn't been loaded yet
-                        if (!element.src && element.dataset.src) {
-                            element.src = element.dataset.src;
-                            element.load();
-                        }
-                        const videoElement = document.createElement('video');
-                        videoElement.src = element.src || element.dataset.src;
-                        videoElement.controls = true;
-                        videoElement.autoplay = true;
-                        videoElement.loop = true;
-                        videoElement.muted = false;
-                        videoElement.style.maxWidth = '90vw';
-                        videoElement.style.maxHeight = '90vh';
-                        videoElement.style.borderRadius = '4px';
-                        videoElement.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
-                        lightbox.querySelector('.lightbox-wrapper').insertBefore(videoElement, lightboxImg);
-                    }
-                }
-            }
-
-// Move navigation arrows to the correct container based on screen size
-            function moveNavigationArrows() {
-                const prevBtn = document.getElementById('prev-btn');
-                const nextBtn = document.getElementById('next-btn');
-                const navContainer = document.querySelector('.nav-container');
-                const lightboxWrapper = document.querySelector('.lightbox-wrapper');
                 
-                if (window.innerWidth <= 600) {
-                    // Für mobile Geräte: Pfeile in den nav-container verschieben
-                    if (!navContainer.contains(prevBtn)) {
-                        navContainer.appendChild(prevBtn);
-                    }
-                    if (!navContainer.contains(nextBtn)) {
-                        navContainer.appendChild(nextBtn);
-                    }
-                    prevBtn.classList.add('mobile');
-                    nextBtn.classList.add('mobile');
-                    prevBtn.classList.remove('desktop');
-                    nextBtn.classList.remove('desktop');
-                } else {
-                    // Für Desktop-Geräte: Pfeile in den lightbox-wrapper verschieben
-                    if (!lightboxWrapper.contains(prevBtn)) {
-                        lightboxWrapper.appendChild(prevBtn);
-                    }
-                    if (!lightboxWrapper.contains(nextBtn)) {
-                        lightboxWrapper.appendChild(nextBtn);
-                    }
-                    prevBtn.classList.add('desktop');
-                    nextBtn.classList.add('desktop');
-                    prevBtn.classList.remove('mobile');
-                    nextBtn.classList.remove('mobile');
+                // Initial load of visible elements
+                function init() {
+                    loadNextElement();
+                    
+                    // Also check when scrolling and resizing for responsiveness
+                    let scrollTimer;
+                    let resizeTimer;
+                    const eventHandler = function() {
+                        clearTimeout(scrollTimer);
+                        clearTimeout(resizeTimer);
+                        // Debounce with a slightly longer delay for stability
+                        scrollTimer = setTimeout(loadNextElement, 100);
+                        resizeTimer = setTimeout(loadNextElement, 100);
+                    };
+                    
+                    window.addEventListener('scroll', eventHandler);
+                    window.addEventListener('resize', eventHandler);
                 }
-            }
-            
-            // Initialisierung der Pfeile beim Laden der Seite
-            function initNavigationArrows() {
-                // Warten, bis das DOM vollständig geladen ist
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', moveNavigationArrows);
-                } else {
-                    moveNavigationArrows();
-                }
-            }
-
-// Open lightbox
-            function openLightbox(index) {
-                currentIndex = index;
-                updateLightboxContent();
-                moveNavigationArrows(); // Move arrows to the correct container
-                lightbox.style.display = 'flex';
-                lightbox.setAttribute('aria-hidden', 'false');
-                // Prevent background scrolling
-                document.body.style.overflow = 'hidden';
-            }
-
-            // Close lightbox
-            function closeLightbox() {
-                lightbox.style.display = 'none';
-                lightbox.setAttribute('aria-hidden', 'true');
-                // Re-enable background scrolling
-                document.body.style.overflow = '';
                 
-                // Pause any playing video in lightbox
-                const video = lightbox.querySelector('video');
-                if (video) {
-                    video.pause();
-                    video.remove();
-                }
-            }
+                // Expose public methods
+                return {
+                    init: init
+                };
+            })();
 
-            // Navigate to next element
-            function nextElement() {
-                const elements = getAllGalleryElements();
-                if (elements.length > 0) {
-                    currentIndex = (currentIndex + 1) % elements.length;
-                    updateLightboxContent();
-                }
-            }
+            // ======================
+            // Lightbox Module
+            // ======================
+            const lightboxModule = (function() {
+                const lightbox = document.getElementById('lightbox');
+                const lightboxImg = document.getElementById('lightbox-img');
+                // Create a reusable video element for the lightbox
+                const lightboxVideo = document.createElement('video');
+                lightboxVideo.controls = true;
+                lightboxVideo.autoplay = true;
+                lightboxVideo.loop = true;
+                lightboxVideo.muted = false;
+                lightboxVideo.style.maxWidth = '90vw';
+                lightboxVideo.style.maxHeight = '90vh';
+                lightboxVideo.style.borderRadius = '4px';
+                lightboxVideo.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
+                // Initially hide the video element
+                lightboxVideo.style.display = 'none';
+                // Append the video element to the lightbox wrapper
+                document.querySelector('.lightbox-wrapper').insertBefore(lightboxVideo, lightboxImg);
+                
+                let currentIndex = 0;
 
-            // Navigate to previous element
-            function prevElement() {
-                const elements = getAllGalleryElements();
-                if (elements.length > 0) {
-                    currentIndex = (currentIndex - 1 + elements.length) % elements.length;
-                    updateLightboxContent();
+                // Helper function to get all gallery elements (images and videos)
+                function getAllGalleryElements() {
+                    return Array.from(document.querySelectorAll('.gallery-item img, .gallery-item video'));
                 }
-            }
 
-            // Event delegation for gallery items
-            grid.addEventListener('click', function(e) {
-                if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') {
-                    const element = e.target;
-                    const galleryItems = getAllGalleryElements();
-                    const index = galleryItems.indexOf(element);
-                    if (index !== -1) {
-                        // Add a new state to history for back button support
-                        history.pushState({lightboxOpen: true}, null, window.location.href);
-                        openLightbox(index);
+                // Update lightbox content
+                function updateLightboxContent() {
+                    const elements = getAllGalleryElements();
+                    if (elements.length > 0 && currentIndex >= 0 && currentIndex < elements.length) {
+                        const element = elements[currentIndex];
+                        
+                        // Clear previous content
+                        lightboxImg.style.display = 'none';
+                        lightboxVideo.style.display = 'none';
+                        lightboxVideo.pause();
+                        lightboxVideo.removeAttribute('src');
+                        
+                        // If it's an image
+                        if (element.tagName === 'IMG') {
+                            // Load the image if it hasn't been loaded yet
+                            if (!element.src && element.dataset.src) {
+                                element.src = element.dataset.src;
+                            }
+                            lightboxImg.src = element.src || element.dataset.src;
+                            lightboxImg.alt = element.alt;
+                            lightboxImg.style.display = 'block';
+                        } 
+                        // If it's a video
+                        else if (element.tagName === 'VIDEO') {
+                            // Load the video if it hasn't been loaded yet
+                            if (!element.src && element.dataset.src) {
+                                element.src = element.dataset.src;
+                                element.load();
+                            }
+                            // Reuse the existing video element
+                            lightboxVideo.src = element.src || element.dataset.src;
+                            lightboxVideo.load();
+                            lightboxVideo.style.display = 'block';
+                            
+                            // Try to play the video automatically
+                            lightboxVideo.play().catch(e => console.log("Autoplay failed:", e));
+                        }
                     }
                 }
-            });
 
-            // Lightbox controls
-            lightbox.addEventListener('click', function(e) {
-                if (e.target === lightbox || e.target.classList.contains('lightbox-wrapper')) {
-                    closeLightbox();
-                } else if (e.target.id === 'prev-btn') {
-                    e.stopPropagation();
-                    prevElement();
-                } else if (e.target.id === 'next-btn') {
-                    e.stopPropagation();
-                    nextElement();
-                } else if (e.target.classList.contains('close-lightbox')) {
-                    closeLightbox();
+                // Open lightbox
+                function openLightbox(index) {
+                    currentIndex = index;
+                    updateLightboxContent();
+                    lightbox.style.display = 'flex';
+                    lightbox.setAttribute('aria-hidden', 'false');
+                    // Prevent background scrolling
+                    document.body.style.overflow = 'hidden';
                 }
-            });
 
-            // Keyboard navigation
-            window.addEventListener('keydown', function(e) {
-                if (lightbox.style.display === 'flex') {
-                    switch(e.key) {
-                        case 'ArrowRight':
-                            nextElement();
-                            break;
-                        case 'ArrowLeft':
-                            prevElement();
-                            break;
-                        case 'Escape':
+                // Close lightbox
+                function closeLightbox() {
+                    lightbox.style.display = 'none';
+                    lightbox.setAttribute('aria-hidden', 'true');
+                    // Re-enable background scrolling
+                    document.body.style.overflow = '';
+                    
+                    // Pause any playing video in lightbox
+                    lightboxVideo.pause();
+                    lightboxVideo.removeAttribute('src');
+                }
+
+                // Navigate to next element
+                function nextElement() {
+                    const elements = getAllGalleryElements();
+                    if (elements.length > 0) {
+                        currentIndex = (currentIndex + 1) % elements.length;
+                        updateLightboxContent();
+                    }
+                }
+
+                // Navigate to previous element
+                function prevElement() {
+                    const elements = getAllGalleryElements();
+                    if (elements.length > 0) {
+                        currentIndex = (currentIndex - 1 + elements.length) % elements.length;
+                        updateLightboxContent();
+                    }
+                }
+                
+                // Initialize lightbox event listeners
+                function init() {
+                    // Event delegation for gallery items
+                    grid.addEventListener('click', function(e) {
+                        if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') {
+                            const element = e.target;
+                            const galleryItems = getAllGalleryElements();
+                            const index = galleryItems.indexOf(element);
+                            if (index !== -1) {
+                                // Add a new state to history for back button support
+                                history.pushState({lightboxOpen: true}, null, window.location.href);
+                                openLightbox(index);
+                            }
+                        }
+                    });
+
+                    // Lightbox controls
+                    lightbox.addEventListener('click', function(e) {
+                        if (e.target === lightbox || e.target.classList.contains('lightbox-wrapper')) {
                             closeLightbox();
-                            break;
-                    }
-                }
-            });
-            
-// Browser back button support for mobile devices
-            window.addEventListener('popstate', function(event) {
-                if (lightbox.style.display === 'flex') {
-                    closeLightbox();
-                    // Prevent default browser back behavior
-                    history.pushState(null, null, window.location.href);
-                }
-            });
+                        } else if (e.target.id === 'prev-btn') {
+                            e.stopPropagation();
+                            prevElement();
+                        } else if (e.target.id === 'next-btn') {
+                            e.stopPropagation();
+                            nextElement();
+                        } else if (e.target.classList.contains('close-lightbox')) {
+                            closeLightbox();
+                        }
+                    });
 
-// Move navigation arrows when window is resized
-            window.addEventListener('resize', function() {
-                if (lightbox.style.display === 'flex') {
-                    moveNavigationArrows();
+                    // Keyboard navigation
+                    window.addEventListener('keydown', function(e) {
+                        if (lightbox.style.display === 'flex') {
+                            switch(e.key) {
+                                case 'ArrowRight':
+                                    nextElement();
+                                    break;
+                                case 'ArrowLeft':
+                                    prevElement();
+                                    break;
+                                case 'Escape':
+                                    closeLightbox();
+                                    break;
+                            }
+                        }
+                    });
+                    
+                    // Browser back button support for mobile devices
+                    window.addEventListener('popstate', function(event) {
+                        if (lightbox.style.display === 'flex') {
+                            closeLightbox();
+                            // Prevent default browser back behavior
+                            history.pushState(null, null, window.location.href);
+                        }
+                    });
                 }
-            });
-            
-            // Initialisierung der Pfeile beim Laden der Seite
-            initNavigationArrows();
+                
+                // Expose public methods
+                return {
+                    init: init
+                };
+            })();
+
+            // ======================
+            // Initialize Modules
+            // ======================
+            lazyLoadingModule.init();
+            lightboxModule.init();
         });
     </script>
 </body>

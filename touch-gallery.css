@@ -1,0 +1,141 @@
+/* Touch Gallery Styles für mobile Geräte */
+
+/* Grundlegende Galerie-Elemente */
+.gallery-item {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.05);
+}
+
+/* Vollbildmodus für Galerie */
+.gallery-open {
+    overflow: hidden;
+}
+
+.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.fullscreen img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border: 2px solid white;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+/* Navigationselemente für die Galerie */
+.fullscreen::before,
+.fullscreen::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.fullscreen::before {
+    left: 20px;
+    clip-path: polygon(60% 30%, 40% 50%, 60% 70%);
+}
+
+.fullscreen::after {
+    right: 20px;
+    clip-path: polygon(40% 30%, 60% 50%, 40% 70%);
+}
+
+/* Hinweis für mobile Benutzer */
+.gallery-open::after {
+    content: 'Wischen Sie nach links oder rechts zum Navigieren';
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    z-index: 1002;
+    animation: fadeOut 3s forwards;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Responsivität für verschiedene Bildschirmgrößen */
+@media (max-width: 768px) {
+    .fullscreen img {
+        max-width: 95vw;
+        max-height: 85vh;
+    }
+    
+    .fullscreen::before,
+    .fullscreen::after {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .fullscreen::before {
+        left: 10px;
+    }
+    
+    .fullscreen::after {
+        right: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .fullscreen img {
+        max-width: 98vw;
+        max-height: 80vh;
+    }
+    
+    .fullscreen::before,
+    .fullscreen::after {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .gallery-open::after {
+        font-size: 12px;
+        padding: 8px 15px;
+        bottom: 10px;
+    }
+}
+
+/* Verbesserung der Touch-Interaktion */
+@media (hover: none) and (pointer: coarse) {
+    /* Entfernt Hover-Effekte auf Touch-Geräten */
+    .gallery-item:hover {
+        transform: none;
+    }
+    
+    /* Größere Touch-Ziele */
+    .fullscreen::before,
+    .fullscreen::after {
+        width: 60px;
+        height: 60px;
+    }
+}

@@ -281,29 +281,68 @@
                 gutter: 10
             });
 
-            // Lazy Loading Implementation via IntersectionObserver
-            const lazyImages = document.querySelectorAll('img.lazy');
+            // Lazy Loading Implementation with load limit
+            const lazyImages = Array.from(document.querySelectorAll('img.lazy'));
+            let loadingCount = 0;
+            const maxConcurrentLoads = 12; // Limit to 12 concurrent image loads
             
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src; // Set the src from data-src
-                        img.classList.remove('lazy');
-                        
-                        // Important: Tell Masonry to layout after the image loads
-                        img.onload = () => {
-                            msnry.layout();
-                        };
-                        
-                        observer.unobserve(img);
+            // Function to load an image
+            function loadImage(img) {
+                if (loadingCount >= maxConcurrentLoads) return false;
+                
+                loadingCount++;
+                img.src = img.dataset.src; // Set the src from data-src
+                img.classList.remove('lazy');
+                
+                // Important: Tell Masonry to layout after the image loads
+                img.onload = () => {
+                    loadingCount--;
+                    msnry.layout();
+                    // Try to load more images
+                    loadNextImage();
+                };
+                
+                img.onerror = () => {
+                    loadingCount--;
+                    // Try to load more images
+                    loadNextImage();
+                };
+                
+                return true;
+            }
+            
+            // Function to load the next available image
+            function loadNextImage() {
+                if (loadingCount >= maxConcurrentLoads) return;
+                
+                for (let i = 0; i < lazyImages.length; i++) {
+                    const img = lazyImages[i];
+                    if (img.classList.contains('lazy')) {
+                        if (isInViewport(img)) {
+                            if (loadImage(img)) {
+                                break; // Only load one image at a time
+                            }
+                        }
                     }
-                });
-            }, {
-                rootMargin: '0px 0px 0px 0px' // Load only when images enter the viewport
-            });
-
-            lazyImages.forEach(img => imageObserver.observe(img));
+                }
+            }
+            
+            // Helper function to check if an element is in the viewport
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+            }
+            
+            // Initial load of visible images
+            loadNextImage();
+            
+            // Also check when scrolling
+            window.addEventListener('scroll', loadNextImage);
         });
 
         // Lightbox Logik

@@ -301,7 +301,8 @@
             // Lazy Loading Implementation with load limit
             const lazyElements = Array.from(document.querySelectorAll('img.lazy, video.lazy-video'));
             let loadingCount = 0;
-            const maxConcurrentLoads = 15; // Limit to 15 concurrent loads
+            // Increase concurrent loads for better performance on mobile
+            const maxConcurrentLoads = 25; // Limit to 25 concurrent loads
             
             // Function to load an element (image or video)
             function loadElement(element) {
@@ -375,9 +376,9 @@
             function isInViewport(element) {
                 const rect = element.getBoundingClientRect();
                 // Load elements that are in viewport or below the viewport
-                // Use a larger preload area on mobile devices
+                // Use a much larger preload area on mobile devices
                 const isMobile = window.innerWidth <= 768;
-                const preloadDistance = isMobile ? 1500 : 500; // 1500px preload on mobile, 500px on desktop
+                const preloadDistance = isMobile ? 2500 : 1000; // 2500px preload on mobile, 1000px on desktop
                 return (
                     rect.top >= 0 &&
                     rect.left >= 0 &&
@@ -391,9 +392,9 @@
             // Also check when scrolling
             let scrollTimer;
             window.addEventListener('scroll', function() {
-                // Debounce scroll events
+                // Debounce scroll events with shorter delay for better responsiveness
                 clearTimeout(scrollTimer);
-                scrollTimer = setTimeout(loadNextElement, 100);
+                scrollTimer = setTimeout(loadNextElement, 50);
             });
 
             // Lightbox Logik mit Event Delegation

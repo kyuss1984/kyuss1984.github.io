@@ -155,12 +155,16 @@ h1 {
 /* Anpassung für mobile Geräte */
 @media (max-width: 600px) {
     .nav-btn {
-        display: block; /* Navigationspfeile auf mobilen Geräten einblenden */
+        display: block !important; /* Navigationspfeile auf mobilen Geräten einblenden */
         top: auto;
         bottom: 20px;
         transform: none;
         padding: 15px;
         font-size: 40px;
+        width: auto;
+        height: auto;
+        visibility: visible;
+        opacity: 1;
     }
     
     .prev {

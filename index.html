@@ -305,15 +305,15 @@
                 // Use a queue to manage elements to be loaded for better performance
                 const lazyElements = Array.from(document.querySelectorAll('img.lazy, video.lazy-video'));
                 let loadingCount = 0;
-                const maxConcurrentLoads = 6; // Reduced for better stability across devices
+                const maxConcurrentLoads = 30; // Increased as per user request
                 
                 // Helper function to check if an element is in the viewport or near the bottom
                 // Adjusted preload distance for more balanced loading
                 function isInViewport(element) {
                     const rect = element.getBoundingClientRect();
                     const isMobile = window.innerWidth <= 768;
-                    // Reduced preload distance for more controlled loading
-                    const preloadDistance = isMobile ? 1000 : 500; 
+                    // Increased preload distance for mobile devices as per user request
+                    const preloadDistance = isMobile ? 3000 : 500; 
                     return (
                         rect.top >= 0 &&
                         rect.left >= 0 &&

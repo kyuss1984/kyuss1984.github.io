@@ -36,11 +36,41 @@ h1 {
     display: block;
     cursor: pointer;
     opacity: 0;
+    /* Add a placeholder background color for better UX during loading */
+    background-color: #333;
 }
 
 .gallery-item img.loaded,
 .gallery-item video.loaded {
     opacity: 1;
+}
+
+/* Add a loading spinner for better UX */
+.gallery-item img:not(.loaded),
+.gallery-item video:not(.loaded) {
+    position: relative;
+    overflow: hidden;
+}
+
+.gallery-item img:not(.loaded)::before,
+.gallery-item video:not(.loaded)::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    margin-left: -10px;
+    border: 2px solid #555;
+    border-top: 2px solid #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .gallery-item img:hover,

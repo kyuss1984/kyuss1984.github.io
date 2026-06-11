@@ -374,11 +374,14 @@
             // Helper function to check if an element is in the viewport or near the bottom
             function isInViewport(element) {
                 const rect = element.getBoundingClientRect();
-                // Load elements that are in viewport or up to 500px below the viewport
+                // Load elements that are in viewport or below the viewport
+                // Use a larger preload area on mobile devices
+                const isMobile = window.innerWidth <= 768;
+                const preloadDistance = isMobile ? 1500 : 500; // 1500px preload on mobile, 500px on desktop
                 return (
                     rect.top >= 0 &&
                     rect.left >= 0 &&
-                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) + 500
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) + preloadDistance
                 );
             }
             

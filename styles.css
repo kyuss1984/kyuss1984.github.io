@@ -41,10 +41,17 @@ h1 {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
     display: block;
-    cursor: pointer;
     opacity: 0;
     /* Add a placeholder background color for better UX during loading */
     background-color: #333;
+}
+
+/* Nur auf Desktop-Geräten den Cursor als Pointer anzeigen */
+@media (min-width: 769px) {
+    .gallery-item img,
+    .gallery-item video {
+        cursor: pointer;
+    }
 }
 
 .gallery-item img.loaded,
@@ -52,10 +59,13 @@ h1 {
     opacity: 1;
 }
 
-.gallery-item img:hover,
-.gallery-item video:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+/* Hover-Effekt nur auf Desktop-Geräten */
+@media (min-width: 769px) {
+    .gallery-item img:hover,
+    .gallery-item video:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
 }
 
 /* Video spezifische Stile */

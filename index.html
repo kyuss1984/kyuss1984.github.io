@@ -496,6 +496,7 @@
                 // Prüfe, ob das Gerät ein mobiles Gerät ist
                 const isMobile = window.innerWidth <= 768;
                 
+                // Nur auf Desktop-Geräten die Lightbox öffnen
                 if (!isMobile && (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO')) {
                     const element = e.target;
                     const galleryItems = getAllGalleryElements();

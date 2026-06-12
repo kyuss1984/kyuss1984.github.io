@@ -199,14 +199,11 @@ h1 {
     right: -60px; /* Rechts neben dem Bild */
 }
 
-/* Desktop-Stil für Pfeile */
-.nav-btn.desktop {
-    display: block;
-}
-
-/* Mobile-Stil für Pfeile */
-.nav-btn.mobile {
-    display: none;
+/* Auf mobilen Geräten die Pfeile ausblenden */
+@media (max-width: 768px) {
+    .nav-btn {
+        display: none;
+    }
 }
 
 /* Anpassung für mobile Geräte */

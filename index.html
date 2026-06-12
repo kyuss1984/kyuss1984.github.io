@@ -281,8 +281,6 @@
             <img class="lightbox-content" id="lightbox-img" alt="">
             <span class="nav-btn next" id="next-btn" role="button" aria-label="Nächstes Bild">&#10095;</span>
         </div>
-        <div class="nav-container">
-        </div>
     </div>
  
     <!-- Masonry.js einbinden -->
@@ -450,71 +448,10 @@
                 }
             }
 
-// Move navigation arrows to the correct container based on screen size
-            function moveNavigationArrows() {
-                // Prüfe, ob das Gerät ein mobiles Gerät ist
-                const isMobile = window.innerWidth <= 768;
-                
-                // Auf mobilen Geräten die Funktion deaktivieren
-                if (isMobile) {
-                    return;
-                }
-                
-                const prevBtn = document.getElementById('prev-btn');
-                const nextBtn = document.getElementById('next-btn');
-                const navContainer = document.querySelector('.nav-container');
-                const lightboxWrapper = document.querySelector('.lightbox-wrapper');
-                
-                if (window.innerWidth <= 600) {
-                    // Für mobile Geräte: Pfeile in den nav-container verschieben
-                    if (!navContainer.contains(prevBtn)) {
-                        navContainer.appendChild(prevBtn);
-                    }
-                    if (!navContainer.contains(nextBtn)) {
-                        navContainer.appendChild(nextBtn);
-                    }
-                    prevBtn.classList.add('mobile');
-                    nextBtn.classList.add('mobile');
-                    prevBtn.classList.remove('desktop');
-                    nextBtn.classList.remove('desktop');
-                } else {
-                    // Für Desktop-Geräte: Pfeile in den lightbox-wrapper verschieben
-                    if (!lightboxWrapper.contains(prevBtn)) {
-                        lightboxWrapper.appendChild(prevBtn);
-                    }
-                    if (!lightboxWrapper.contains(nextBtn)) {
-                        lightboxWrapper.appendChild(nextBtn);
-                    }
-                    prevBtn.classList.add('desktop');
-                    nextBtn.classList.add('desktop');
-                    prevBtn.classList.remove('mobile');
-                    nextBtn.classList.remove('mobile');
-                }
-            }
-            
-// Initialisierung der Pfeile beim Laden der Seite
-            function initNavigationArrows() {
-                // Prüfe, ob das Gerät ein mobiles Gerät ist
-                const isMobile = window.innerWidth <= 768;
-                
-                // Auf mobilen Geräten die Funktion deaktivieren
-                if (isMobile) {
-                    return;
-                }
-                
-                // Warten, bis das DOM vollständig geladen ist
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', moveNavigationArrows);
-                } else {
-                    moveNavigationArrows();
-                }
-            }
-
 // Open lightbox
             function openLightbox(index) {
                 currentIndex = index;
                 updateLightboxContent();
-                moveNavigationArrows(); // Move arrows to the correct container
                 lightbox.style.display = 'flex';
                 lightbox.setAttribute('aria-hidden', 'false');
                 // Prevent background scrolling
@@ -623,8 +560,6 @@
                 }
             });
             
-            // Initialisierung der Pfeile beim Laden der Seite
-            initNavigationArrows();
         });
     </script>
 </body>

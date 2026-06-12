@@ -452,6 +452,14 @@
 
 // Move navigation arrows to the correct container based on screen size
             function moveNavigationArrows() {
+                // Prüfe, ob das Gerät ein mobiles Gerät ist
+                const isMobile = window.innerWidth <= 768;
+                
+                // Auf mobilen Geräten die Funktion deaktivieren
+                if (isMobile) {
+                    return;
+                }
+                
                 const prevBtn = document.getElementById('prev-btn');
                 const nextBtn = document.getElementById('next-btn');
                 const navContainer = document.querySelector('.nav-container');
@@ -484,8 +492,16 @@
                 }
             }
             
-            // Initialisierung der Pfeile beim Laden der Seite
+// Initialisierung der Pfeile beim Laden der Seite
             function initNavigationArrows() {
+                // Prüfe, ob das Gerät ein mobiles Gerät ist
+                const isMobile = window.innerWidth <= 768;
+                
+                // Auf mobilen Geräten die Funktion deaktivieren
+                if (isMobile) {
+                    return;
+                }
+                
                 // Warten, bis das DOM vollständig geladen ist
                 if (document.readyState === 'loading') {
                     document.addEventListener('DOMContentLoaded', moveNavigationArrows);

@@ -370,12 +370,15 @@
                 }
             }
             
+// Konfiguration für Breakpoints
+            const MOBILE_BREAKPOINT = 768;
+            
             // Helper function to check if an element is in the viewport or near the bottom
             function isInViewport(element) {
                 const rect = element.getBoundingClientRect();
                 // Load elements that are in viewport or below the viewport
                 // Use an even larger preload area on mobile devices for fast scrolling
-                const isMobile = window.innerWidth <= 768;
+                const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
                 const preloadDistance = isMobile ? 3500 : 1500; // 3500px preload on mobile, 1500px on desktop
                 return (
                     rect.top >= 0 &&
@@ -395,14 +398,17 @@
                 scrollTimer = setTimeout(loadNextElement, 25);
             });
 
-            // Lightbox Logik mit Event Delegation
+// Lightbox Logik mit Event Delegation
             const lightbox = document.getElementById('lightbox');
             const lightboxImg = document.getElementById('lightbox-img');
             let currentIndex = 0;
+            
+            // Cache gallery elements to avoid repeated DOM queries
+            const galleryElements = Array.from(document.querySelectorAll('.gallery-item img, .gallery-item video'));
 
             // Helper function to get all gallery elements (images and videos)
             function getAllGalleryElements() {
-                return Array.from(document.querySelectorAll('.gallery-item img, .gallery-item video'));
+                return galleryElements;
             }
 
 // Update lightbox content
@@ -494,7 +500,7 @@
 // Event delegation for gallery items
             grid.addEventListener('click', function(e) {
                 // Prüfe, ob das Gerät ein mobiles Gerät ist
-                const isMobile = window.innerWidth <= 768;
+                const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
                 
                 // Nur auf Desktop-Geräten die Lightbox öffnen
                 if (!isMobile && (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO')) {
@@ -527,7 +533,7 @@
 // Keyboard navigation
             window.addEventListener('keydown', function(e) {
                 // Prüfe, ob das Gerät ein mobiles Gerät ist
-                const isMobile = window.innerWidth <= 768;
+                const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
                 
                 // Deaktiviere die Tastaturnavigation auf mobilen Geräten
                 if (!isMobile && lightbox.style.display === 'flex') {

@@ -140,7 +140,6 @@ h1 {
     height: fit-content; /* Höhe anpassen, um sich an den Inhalt anzupassen */
     /* Stellt sicher, dass absolute positionierte Elemente (Pfeile) relativ zu diesem Container positioniert werden */
     flex-direction: row; /* Stellt sicher, dass die Elemente horizontal angeordnet sind */
-    align-items: center;
 }
 
 .lightbox-content {

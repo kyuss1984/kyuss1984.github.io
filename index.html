@@ -538,9 +538,12 @@
                 }
             }
 
-            // Event delegation for gallery items
+// Event delegation for gallery items
             grid.addEventListener('click', function(e) {
-                if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') {
+                // Prüfe, ob das Gerät ein mobiles Gerät ist
+                const isMobile = window.innerWidth <= 768;
+                
+                if (!isMobile && (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO')) {
                     const element = e.target;
                     const galleryItems = getAllGalleryElements();
                     const index = galleryItems.indexOf(element);
@@ -567,9 +570,13 @@
                 }
             });
 
-            // Keyboard navigation
+// Keyboard navigation
             window.addEventListener('keydown', function(e) {
-                if (lightbox.style.display === 'flex') {
+                // Prüfe, ob das Gerät ein mobiles Gerät ist
+                const isMobile = window.innerWidth <= 768;
+                
+                // Deaktiviere die Tastaturnavigation auf mobilen Geräten
+                if (!isMobile && lightbox.style.display === 'flex') {
                     switch(e.key) {
                         case 'ArrowRight':
                             nextElement();

@@ -198,9 +198,3 @@ h1 {
     right: -60px; /* Rechts neben dem Bild */
 }
 
-/* Auf mobilen Geräten die Pfeile ausblenden */
-@media (max-width: 768px) {
-    .nav-btn {
-        display: none;
-    }
-}

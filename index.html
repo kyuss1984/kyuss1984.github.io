@@ -506,7 +506,11 @@
 
 // Event delegation for gallery items
             grid.addEventListener('click', function(e) {
-                if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') {
+                // Prüfe, ob das Gerät ein mobiles Gerät ist
+                const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+                
+                // Nur auf Desktop-Geräten die Lightbox öffnen
+                if (!isMobile && (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO')) {
                     const element = e.target;
                     const galleryItems = getAllGalleryElements();
                     const index = galleryItems.indexOf(element);
@@ -535,7 +539,11 @@
 
 // Keyboard navigation
             window.addEventListener('keydown', function(e) {
-                if (lightbox.style.display === 'flex') {
+                // Prüfe, ob das Gerät ein mobiles Gerät ist
+                const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+                
+                // Deaktiviere die Tastaturnavigation auf mobilen Geräten
+                if (!isMobile && lightbox.style.display === 'flex') {
                     switch(e.key) {
                         case 'ArrowRight':
                             nextElement();
@@ -550,6 +558,14 @@
                 }
             });
             
+// Browser back button support for mobile devices
+            window.addEventListener('popstate', function(event) {
+                if (lightbox.style.display === 'flex') {
+                    closeLightbox();
+                    // Prevent default browser back behavior
+                    history.pushState(null, null, window.location.href);
+                }
+            });
 
         });
     </script>

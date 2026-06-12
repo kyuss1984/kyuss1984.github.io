@@ -13,9 +13,19 @@ h1 {
 
 /* Masonry-Layout mit Masonry.js */
 .gallery-container {
-    width: 75%;
+    width: 100%;
+    max-width: 75%;
     margin: 0 auto;
     position: relative;
+    padding: 0 10px; /* Kleiner Abstand zu den Rändern auf Desktop */
+}
+
+/* Entferne das feste Breitenlimit auf mobilen Geräten */
+@media (max-width: 768px) {
+    .gallery-container {
+        max-width: 100%;
+        padding: 0 5px; /* Sehr kleiner Abstand zu den Rändern auf Mobilgeräten */
+    }
 }
 
 .gallery-item {
@@ -70,13 +80,22 @@ h1 {
 
 @media (max-width: 768px) {
     .gallery-item {
-        width: calc(50% - 10px);
+        width: calc(50% - 5px);
+    }
+    
+    .gallery-container {
+        padding: 0 2px;
     }
 }
 
 @media (max-width: 480px) {
     .gallery-item {
         width: 100%;
+        padding: 2px;
+    }
+    
+    .gallery-container {
+        padding: 0;
     }
 }
 

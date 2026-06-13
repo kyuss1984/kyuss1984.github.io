@@ -120,7 +120,7 @@ h1 {
 
 @media (max-width: 768px) {
     .gallery-container {
-        margin-top: 0px; /* Angepasster Abstand für Mobilgeräte */
+        margin-top: 60px; /* Erhöhter Abstand für Mobilgeräte */
     }
 }
 
@@ -210,6 +210,7 @@ h1 {
     
     .gallery-container {
         padding: 0; /* Kein Abstand zu den Rändern */
+        margin-top: 60px; /* Erhöhter Abstand für sehr kleine Bildschirme */
     }
     
     body {

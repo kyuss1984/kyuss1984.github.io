@@ -68,19 +68,17 @@ h1 {
     color: #fff;
     text-decoration: none;
     border-radius: 4px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s ease;
     font-weight: normal;
 }
 
 .folder-link:hover,
 .folder-link:focus {
     background-color: #555;
-    transform: translateY(-2px);
     outline: none;
 }
 
 .folder-link:active {
-    transform: translateY(0);
 }
 
 .folder-link.active {

@@ -235,8 +235,8 @@
                  // Reinitialisiere Lazy Loading
                  initLazyLoading();
                  
-                 // Manuell ein Scroll-Event auslösen, um sicherzustellen, dass sichtbare Elemente geladen werden
-                 window.dispatchEvent(new Event('scroll'));
+                 // Scrolle zum Anfang der Seite, wenn die Galerie neu generiert wird
+                 window.scrollTo(0, 0);
              }
 
             // Funktion zum Initialisieren des Lazy Loading

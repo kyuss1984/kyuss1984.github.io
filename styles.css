@@ -116,7 +116,7 @@ h1 {
 
 @media (max-width: 768px) {
     .gallery-container {
-        margin-top: 150px; /* Erhöhter Abstand für Mobilgeräte */
+        margin-top: 200px; /* Erhöhter Abstand für Mobilgeräte */
     }
 }
 

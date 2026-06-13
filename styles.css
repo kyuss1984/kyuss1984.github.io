@@ -7,6 +7,12 @@ body {
     padding-top: 120px; /* Platz für den fixierten Header und die Navigation */
 }
 
+@media (max-width: 768px) {
+    body {
+        padding-top: 100px; /* Angepasster Abstand für Mobilgeräte */
+    }
+}
+
 h1 {
     text-align: center;
     color: #ffffff;
@@ -31,6 +37,13 @@ h1 {
     background-color: #000000;
     padding: 10px 0;
     z-index: 100;
+}
+
+@media (max-width: 768px) {
+    .folder-navigation {
+        top: 30px; /* Angepasste Position für Mobilgeräte */
+        padding: 5px 0;
+    }
 }
 
 .folder-list {
@@ -103,6 +116,12 @@ h1 {
     margin: 0 auto;
     position: relative;
     margin-top: 0px; /* Platz für den fixierten Header und die Navigation */
+}
+
+@media (max-width: 768px) {
+    .gallery-container {
+        margin-top: 0px; /* Angepasster Abstand für Mobilgeräte */
+    }
 }
 
 /* Für sehr große Bildschirme, behalte die ursprüngliche Breite */

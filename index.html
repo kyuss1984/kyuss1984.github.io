@@ -202,39 +202,42 @@
             // Aktuelle Kategorie
             let currentCategory = "Animals of War";
 
-            // Funktion zum Generieren der Galerie-Elemente
-            function generateGalleryItems(category) {
-                const container = document.getElementById('masonry-container');
-                container.innerHTML = ''; // Leere den Container
+             // Funktion zum Generieren der Galerie-Elemente
+             function generateGalleryItems(category) {
+                 const container = document.getElementById('masonry-container');
+                 container.innerHTML = ''; // Leere den Container
 
-                let items = [];
-                
-                // Zeige nur Elemente der ausgewählten Kategorie an
-                if (folderMapping[category]) {
-                    items = folderMapping[category].images.map(src => ({ src, type: 'image' }));
-                    items = items.concat(folderMapping[category].videos.map(src => ({ src, type: 'video' })));
-                }
+                 let items = [];
+                 
+                 // Zeige nur Elemente der ausgewählten Kategorie an
+                 if (folderMapping[category]) {
+                     items = folderMapping[category].images.map(src => ({ src, type: 'image' }));
+                     items = items.concat(folderMapping[category].videos.map(src => ({ src, type: 'video' })));
+                 }
 
-                // Erstelle die Galerie-Elemente
-                items.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'gallery-item';
-                    if (item.type === 'video') {
-                        div.classList.add('video-item');
-                        div.innerHTML = `<video data-src="${item.src}" class="lazy-video" muted loop playsinline autoplay></video>`;
-                    } else {
-                        div.innerHTML = `<img data-src="${item.src}" alt="Galeriebild" class="lazy">`;
-                    }
-                    container.appendChild(div);
-                });
+                 // Erstelle die Galerie-Elemente
+                 items.forEach(item => {
+                     const div = document.createElement('div');
+                     div.className = 'gallery-item';
+                     if (item.type === 'video') {
+                         div.classList.add('video-item');
+                         div.innerHTML = `<video data-src="${item.src}" class="lazy-video" muted loop playsinline autoplay></video>`;
+                     } else {
+                         div.innerHTML = `<img data-src="${item.src}" alt="Galeriebild" class="lazy">`;
+                     }
+                     container.appendChild(div);
+                 });
 
-                // Reinitialisiere Masonry
-                msnry.reloadItems();
-                msnry.layout();
+                 // Reinitialisiere Masonry
+                 msnry.reloadItems();
+                 msnry.layout();
 
-                // Reinitialisiere Lazy Loading
-                initLazyLoading();
-            }
+                 // Reinitialisiere Lazy Loading
+                 initLazyLoading();
+                 
+                 // Manuell ein Scroll-Event auslösen, um sicherzustellen, dass sichtbare Elemente geladen werden
+                 window.dispatchEvent(new Event('scroll'));
+             }
 
             // Funktion zum Initialisieren des Lazy Loading
             function initLazyLoading() {

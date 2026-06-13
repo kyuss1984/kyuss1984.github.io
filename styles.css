@@ -210,7 +210,7 @@ h1 {
     
     .gallery-container {
         padding: 0; /* Kein Abstand zu den Rändern */
-        margin-top: 60px; /* Erhöhter Abstand für sehr kleine Bildschirme */
+        margin-top: 100px; /* Erhöhter Abstand für sehr kleine Bildschirme */
     }
     
     body {

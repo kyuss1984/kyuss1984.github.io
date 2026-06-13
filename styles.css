@@ -5,6 +5,7 @@ body {
     padding: 20px;
     background-color: #000000;
     padding-top: 120px; /* Platz für den fixierten Header und die Navigation */
+    overflow-y: scroll; /* Scrollbar immer sichtbar machen */
 }
 
 @media (max-width: 768px) {

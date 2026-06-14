@@ -3,8 +3,8 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #000000;
     padding-top: 120px; /* Platz für den fixierten Header und die Navigation */
+    background-color: #000000;
     overflow-y: scroll; /* Scrollbar immer sichtbar machen */
 }
 
@@ -111,7 +111,6 @@ h1 {
     width: 95%; /* Reduziere leicht die Breite für bessere Ränder auf Desktop */
     margin: 0 auto;
     position: relative;
-    margin-top: 0px; /* Platz für den fixierten Header und die Navigation */
 }
 
 @media (max-width: 768px) {
@@ -174,10 +173,6 @@ h1 {
 .gallery-item video {
     background-color: #000;
     object-fit: cover;
-}
-
-.gallery-item video.loaded {
-    opacity: 1;
 }
 
 /* Responsive Design für Masonry.js */
@@ -299,6 +294,14 @@ h1 {
 
 .next {
     right: -60px; /* Rechts neben dem Bild */
+}
+
+/* Lightbox Video Styles */
+.lightbox video {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 4px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
 /* Auf mobilen Geräten die Pfeile ausblenden */

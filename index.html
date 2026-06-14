@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio – Bildergalerie mit verschiedenen Kategorien: Animals of War, Happy Places, Jungle Fever, Soldiers, Higher Ground und Misc.">
     <title>PORTFOLIO</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -258,8 +259,17 @@
                  window.scrollTo(0, 0);
              }
 
+            // Scroll-Event-Referenz für Memory-Leak-Vermeidung
+            let scrollHandler = null;
+
             // Funktion zum Initialisieren des Lazy Loading
             function initLazyLoading() {
+                // Vorherigen Scroll-Listener entfernen (Memory Leak Fix)
+                if (scrollHandler) {
+                    window.removeEventListener('scroll', scrollHandler);
+                    scrollHandler = null;
+                }
+
                 const lazyElements = Array.from(document.querySelectorAll('img.lazy, video.lazy-video'));
                 let loadingCount = 0;
                 const maxConcurrentLoads = 35; // Limit to 35 concurrent loads
@@ -332,7 +342,7 @@
                     }
                 }
                 
-                // Helper function to check if an element is in the viewport or near the bottom
+                // Helper function to check if an element is in the viewport
                 function isInViewport(element) {
                     const rect = element.getBoundingClientRect();
                     // Load elements that are in viewport or below the viewport
@@ -349,13 +359,13 @@
                 // Initial load of visible elements
                 loadNextElement();
                 
-                // Also check when scrolling
+                // Scroll-Listener mit Debounce und Referenz für spätere Entfernung
                 let scrollTimer;
-                window.addEventListener('scroll', function() {
-                    // Debounce scroll events with even shorter delay for better responsiveness with fast scrolling
+                scrollHandler = function() {
                     clearTimeout(scrollTimer);
                     scrollTimer = setTimeout(loadNextElement, 25);
-                });
+                };
+                window.addEventListener('scroll', scrollHandler);
             }
 
             // Konfiguration für Breakpoints
@@ -426,10 +436,6 @@
                         videoElement.autoplay = true;
                         videoElement.loop = true;
                         videoElement.muted = false;
-                        videoElement.style.maxWidth = '90vw';
-                        videoElement.style.maxHeight = '90vh';
-                        videoElement.style.borderRadius = '4px';
-                        videoElement.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
                         lightbox.querySelector('.lightbox-wrapper').insertBefore(videoElement, lightboxImg);
                     }
                 }

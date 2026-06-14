@@ -495,8 +495,6 @@
                     const galleryItems = getAllGalleryElements();
                     const index = galleryItems.indexOf(element);
                     if (index !== -1) {
-                        // Add a new state to history for back button support
-                        history.pushState({lightboxOpen: true}, null, window.location.href);
                         openLightbox(index);
                     }
                 }
@@ -537,16 +535,6 @@
                     }
                 }
             });
-            
-            // Browser back button support for mobile devices
-            window.addEventListener('popstate', function(event) {
-                if (lightbox.style.display === 'flex') {
-                    closeLightbox();
-                    // Prevent default browser back behavior
-                    history.pushState(null, null, window.location.href);
-                }
-            });
-
         });
     </script>
 </body>

@@ -365,15 +365,12 @@
                 
                 // Function to load the next available element
                 function loadNextElement() {
-                    if (loadingCount >= maxConcurrentLoads) return;
-                    
                     for (let i = 0; i < lazyElements.length; i++) {
+                        if (loadingCount >= maxConcurrentLoads) return;
                         const element = lazyElements[i];
                         if (element.classList.contains('lazy') || element.classList.contains('lazy-video')) {
                             if (isInViewport(element)) {
-                                if (loadElement(element)) {
-                                    break; // Only load one element at a time
-                                }
+                                loadElement(element);
                             }
                         }
                     }
@@ -382,14 +379,14 @@
                 // Helper function to check if an element is in the viewport
                 function isInViewport(element) {
                     const rect = element.getBoundingClientRect();
-                    // Load elements that are in viewport or below the viewport
+                    // Load elements near the viewport (above, in, or below)
                     // Use an even larger preload area on mobile devices for fast scrolling
                     const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
                     const preloadDistance = isMobile ? 3500 : 1500; // 3500px preload on mobile, 1500px on desktop
+                    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
                     return (
-                        rect.top >= 0 &&
-                        rect.left >= 0 &&
-                        rect.top <= (window.innerHeight || document.documentElement.clientHeight) + preloadDistance
+                        rect.top <= viewportHeight + preloadDistance &&
+                        rect.bottom >= -preloadDistance
                     );
                 }
                 

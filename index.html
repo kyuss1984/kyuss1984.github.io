@@ -225,6 +225,7 @@
                         "images/Misc/libelle3.jpg",
                         "images/Misc/needles.jpg",
                         "images/Misc/netz.jpg",
+                        "images/Misc/planthouse2ia.png",
                         "images/Misc/purple.jpg",
                         "images/Misc/rosa.jpg",
                         "images/Misc/roseTransparent2.jpg",
@@ -268,8 +269,28 @@
                  
                  // Zeige nur Elemente der ausgewählten Kategorie an
                  if (folderMapping[category]) {
+                     // Bilder als Basis
                      items = folderMapping[category].images.map(src => ({ src, type: 'image' }));
-                     items = items.concat(folderMapping[category].videos.map(src => ({ src, type: 'video' })));
+                     
+                     // Videos direkt nach dem entsprechenden Bild einfügen
+                     folderMapping[category].videos.forEach(videoSrc => {
+                         // Dateinamen ohne Erweiterung extrahieren (z.B. "5" aus "videos/Happy Places/5.mp4")
+                         const videoStem = videoSrc.split('/').pop().replace(/\.[^.]+$/, '');
+                         
+                         // Index des entsprechenden Bildes finden (gleicher Dateiname, andere Erweiterung)
+                         const imageIndex = items.findIndex(item => {
+                             const imageStem = item.src.split('/').pop().replace(/\.[^.]+$/, '');
+                             return imageStem === videoStem;
+                         });
+                         
+                         if (imageIndex !== -1) {
+                             // Video direkt nach dem entsprechenden Bild einfügen
+                             items.splice(imageIndex + 1, 0, { src: videoSrc, type: 'video' });
+                         } else {
+                             // Fallback: Video am Ende hinzufügen, falls kein passendes Bild gefunden wird
+                             items.push({ src: videoSrc, type: 'video' });
+                         }
+                     });
                  }
 
                  // Erstelle die Galerie-Elemente

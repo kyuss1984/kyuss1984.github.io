@@ -287,11 +287,18 @@
                              // Video direkt nach dem entsprechenden Bild einfügen
                              items.splice(imageIndex + 1, 0, { src: videoSrc, type: 'video' });
                          } else {
-                             // Fallback: Video am Ende hinzufügen, falls kein passendes Bild gefunden wird
-                             items.push({ src: videoSrc, type: 'video' });
-                         }
-                     });
-                 }
+                      // Fallback: Video am Ende hinzufügen, falls kein passendes Bild gefunden wird
+                              items.push({ src: videoSrc, type: 'video' });
+                          }
+                      });
+                     
+                     // Misc.-Videos an den Anfang der Galerie verschieben
+                     if (category === "Misc.") {
+                         const videoItems = items.filter(item => item.type === 'video');
+                         const imageItems = items.filter(item => item.type === 'image');
+                         items = [...videoItems, ...imageItems];
+                     }
+                  }
 
                  // Erstelle die Galerie-Elemente
                  items.forEach(item => {

@@ -298,11 +298,19 @@
                           }
                       });
                      
-                     // Misc.-Videos an den Anfang der Galerie verschieben
+                     // Misc.-Videos: Nur Videos ohne passendes Bild an den Anfang verschieben,
+                     // Videos mit passendem Bild bleiben nach diesem eingefügt
                      if (category === "Misc.") {
-                         const videoItems = items.filter(item => item.type === 'video');
-                         const imageItems = items.filter(item => item.type === 'image');
-                         items = [...videoItems, ...imageItems];
+                         const unmatchedVideoSrcs = folderMapping[category].videos.filter(videoSrc => {
+                             const videoStem = videoSrc.split('/').pop().replace(/\.[^.]+$/, '');
+                             return !folderMapping[category].images.some(imageSrc => {
+                                 const imageStem = imageSrc.split('/').pop().replace(/\.[^.]+$/, '');
+                                 return imageStem === videoStem;
+                             });
+                         });
+                         const unmatchedVideos = items.filter(item => item.type === 'video' && unmatchedVideoSrcs.includes(item.src));
+                         const otherItems = items.filter(item => !(item.type === 'video' && unmatchedVideoSrcs.includes(item.src)));
+                         items = [...unmatchedVideos, ...otherItems];
                      }
                   }
 
